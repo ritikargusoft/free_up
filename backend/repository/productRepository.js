@@ -16,8 +16,8 @@ export const createProductsTable = async () => {
     created_at TIMESTAMP DEFAULT NOW(),
     updated_at TIMESTAMP DEFAULT NOW(),
 
-    FOREIGN KEY (seller_uuid) REFERENCES users(user_uuid) ON DELETE SET NULL,
-    FOREIGN KEY (brand_id) REFERENCES brands(brand_id) ON DELETE SET NULL
+    FOREIGN KEY (seller_uuid) REFERENCES users(user_uuid) ON DELETE CASCADE,
+    FOREIGN KEY (brand_id) REFERENCES brands(brand_id) 
     );
     `;
   await pool.query(query);

@@ -1,6 +1,4 @@
 import { Client } from "pg";
-// const { Client } = require("pg");
-// require("dotenv").config();
 
 // creating db
 const createDatabase = async () => {
