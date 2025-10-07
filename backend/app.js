@@ -1,10 +1,12 @@
 import express from "express";
-import createDatabase from "./db/createDB.js"
+import createDatabase from "./db/createDB.js";
+import createTables from "./db/pgDbInit.js";
 const app = express();
 
 async function initializeDatabase() {
   try {
     await createDatabase();
+    await createTables();
     console.log("Database and tables initialized successfully.");
   } catch (err) {
     console.error("Error during database initialization:", err);
