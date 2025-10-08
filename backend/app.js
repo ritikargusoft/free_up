@@ -1,6 +1,8 @@
 import express from "express";
 import createDatabase from "./db/createDB.js";
 import createTables from "./db/pgDbInit.js";
+import cookieParser from "cookie-parser";
+import router from "./routes.js";
 const app = express();
 
 async function initializeDatabase() {
@@ -14,9 +16,10 @@ async function initializeDatabase() {
 }
 initializeDatabase();
 
-app.get("/", () => {
-  "Hello world";
-});
+app.use(express.json());
+app.use(cookieParser());
+
+app.use("/", router);
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {

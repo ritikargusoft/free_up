@@ -1,9 +1,9 @@
-import { verifyToken } from "../utils/helper";
+import { verifyToken } from "../utils/helper.js";
 
 export function authenticate(req,res,next){
     const header = req.headers.authorization;
 
-    if(!header || !header.startsWith("Bearer ")){
+    if(!header || !header.startsWith("Bearer")){
         return res.status(401).json({message: "Authorization header missing"})
     }
 
