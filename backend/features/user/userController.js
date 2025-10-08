@@ -104,7 +104,6 @@ export const updateUser = async (req, res) => {
 
 export async function changePassword(req, res) {
   try {
-    console.log("PASS", { params: req.params, body: req.body });
 
     const userUuid = req.params.id;
     // ensuring user is changing it's own password

@@ -78,10 +78,8 @@ export async function changePassword(user_uuid, oldPassword, newPassword) {
   }
   const isMatch = await bcrypt.compare(oldPassword, user.password);
   if (!isMatch) throw new Error("Old password is incorrect");
-  console.log("NEW PAssword ", newPassword);
 
   const hashed = await bcrypt.hash(String(newPassword), SALT_ROUNDS);
-  console.log(hashed);
 
   const updated = userModel.changePassword(user_uuid, hashed);
   if (!updated) {

@@ -56,8 +56,6 @@ export const updateUser = async (user_uuid, { name, phone, address }) => {
  @user_uuid uuid desc
    */
 export const changePassword = async (user_uuid, newHashedPassword) => {
-  console.log("hashed password", newHashedPassword);
-
   const q = `UPDATE users SET password = $1, updated_at = NOW() 
     WHERE user_uuid =$2
     RETURNING user_uuid, user_id , email`;
