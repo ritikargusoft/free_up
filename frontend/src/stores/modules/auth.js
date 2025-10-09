@@ -1,9 +1,14 @@
-// import { loginUser, registerUser, logoutUser } from "@/features/auth/api/authService";
 import {
   loginUser,
   registerUser,
   logoutUser,
 } from "../../features/auth/api/authService.js";
+import { changePassword as apiChangePassword } from "../../features/auth/api/userService.js";
+import {
+  updateUser as apiUpdateUser,
+  getUserById,
+} from "../../features/auth/api/userService.js";
+import { toast } from "vue3-toastify";
 export default {
   namespaced: true,
   state: () => ({
@@ -52,9 +57,59 @@ export default {
     async logout({ commit }) {
       try {
         await logoutUser();
-      } catch (err) {
-      }
+      } catch (err) {}
       commit("clearAuth");
+    },
+
+    async updateProfile({ commit, state }, payload) {
+      const userUuid =
+        state.user?.user_uuid || state.user?.userId || state.user?.id;
+      if (!userUuid) {
+        const err = new Error("User not found");
+        toast.error("User not found");
+        throw err;
+      }
+      const res = await apiUpdateUser(userUuid, payload);
+      const updatedUser = res.user || res;
+      if (updatedUser) {
+        commit("setUser", updatedUser);
+        toast.success("Profile updated");
+      } else {
+        toast.success("Profile updated");
+      }
+      return updatedUser;
+    },
+    async refreshUser({ commit, state }) {
+      const userUuid =
+        state.user?.user_uuid || state.user?.userId || state.user?.id;
+      if (!userUuid) return null;
+      const res = await getUserById(userUuid);
+      const updatedUser = res.user || res;
+      if (updatedUser) commit("setUser", updatedUser);
+      return updatedUser;
+    },
+
+    async changePassword({ state }, { oldPassword, newPassword }) {
+      const userUuid =
+        state.user?.user_uuid || state.user?.userId || state.user?.id;
+      if (!userUuid) {
+        const err = new Error("User not found");
+        toast.error("User not found");
+        throw err;
+      }
+
+      try {
+        const res = await apiChangePassword(userUuid, oldPassword, newPassword);
+        toast.success(res?.message || "Password saved sucessfuly");
+        return res;
+      } catch (err) {
+        const msg =
+          err.response?.data?.message ||
+          err.message ||
+          "Password was not saved";
+        toast.error(msg);
+        throw err;
+      }
     },
   },
 };

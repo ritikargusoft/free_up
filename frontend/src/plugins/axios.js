@@ -1,8 +1,10 @@
 import axios from "axios";
 import store from "../stores/index.js";
+
+const backednURL = Process.env.VITE_API_URL;
 const api = axios.create({
-  baseURL: "http://localhost:3000", // base backend origin
-  withCredentials: true, // send cookies (important for refresh token)
+  baseURL: backednURL,
+  withCredentials: true, 
   headers: {
     "Content-Type": "application/json",
   },
@@ -14,26 +16,21 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// optional: simple 401 handler - will logout on unauthorized
 api.interceptors.response.use(
   (res) => res,
   async (error) => {
-    // if 401 and we are not on refresh endpoint, remove auth and redirect to login
     if (
       error.response?.status === 401 &&
       !error.config.url.includes("/users/refresh-token")
     ) {
       try {
-        // try refresh token once
         await api.post(
           "/users/refresh-token",
           {},
           { headers: { "Content-Type": "application/json" } }
         );
-        // if refresh succeeded, retry original request
         return api(error.config);
       } catch (refreshErr) {
-        // refresh failed => clear state and redirect
         store.dispatch("auth/logout");
         window.location.href = "/login";
         return Promise.reject(refreshErr);

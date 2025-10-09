@@ -1,0 +1,26 @@
+.bg-primary {
+  background-color: var(--v-theme-primary) !important;
+  border-color: var(--v-theme-primary) !important;
+}
+/* text white utility */
+.text-white {
+  color: #ffffff !important;
+}
+/* If you want an outlined/flat button using classes rather than color prop */
+.v-btn.bg-primary {
+  color: #000; /* default text color on the theme; override below when using text-white */
+}
+/* ensure v-btn respects .text-white when used */
+.v-btn.text-white,
+.v-btn .text-white,
+.v-btn.text-white * {
+  color: #fff !important;
+}
+/* Optional: make small helper classes for spacing consistent with Vuetify */
+.mt-2 { margin-top: 8px !important; }
+.mb-2 { margin-bottom: 8px !important; }
+
+
+
+
+

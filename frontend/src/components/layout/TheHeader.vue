@@ -1,3 +1,4 @@
+
 <template>
   <v-app-bar color="primary" dark>
     <v-toolbar-title class="mr-6">FreeUp POC</v-toolbar-title>
@@ -29,26 +30,29 @@
 <script setup>
 import { computed } from "vue";
 import { useStore } from "vuex";
+import { useRouter } from "vue-router";
 const store = useStore();
+const router = useRouter();
 const isAuth = computed(() => store.getters["auth/isAuthenticated"]);
 const user = computed(() => store.getters["auth/user"]);
-const displayName = computed(() => (user.value?.name ? user.value.name : user.value?.email || "User"));
+const displayName = computed(() =>
+  user.value?.name ? user.value.name : user.value?.email || "User"
+);
 function doLogout() {
   store.dispatch("auth/logout");
-  // navigate to login
   window.location.href = "/login";
 }
 function goProfile() {
-  // placeholder: route to profile page when created
-  // router.push({ name: 'profile' });
-  alert("Profile page coming soon");
+  router.push({ name: "profile" });
 }
 </script>
 <style scoped>
-.v-app-bar { position: sticky; top: 0; z-index: 10; }
+.v-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 </style>
-
-
 
 
 

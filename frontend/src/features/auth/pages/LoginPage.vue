@@ -35,7 +35,6 @@ export default {
       loading.value = true;
       try {
         await store.dispatch("auth/login", { email: email.value, password: password.value });
-        // ensure redirection to home
         router.replace({ name: "home" });
       } catch (err) {
         error.value = err.response?.data?.message || err.message || "Login failed";

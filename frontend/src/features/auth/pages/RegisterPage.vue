@@ -37,7 +37,6 @@ export default {
       loading.value = true;
       try {
         await store.dispatch("auth/register", { name: name.value, email: email.value, password: password.value });
-        // after register, go to login so user can sign in
         router.replace({ name: "login" });
       } catch (err) {
         error.value = err.response?.data?.message || err.message || "Registration failed";
