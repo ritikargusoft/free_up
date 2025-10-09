@@ -1,21 +1,24 @@
 <template>
-  <v-app-bar color="primary" dark elevated>
-    <v-app-bar-nav-icon @click="$emit('toggle-drawer')" />
-    <v-toolbar-title>My App</v-toolbar-title>
+  <v-app-bar color="primary" dark>
+    <v-toolbar-title class="mr-6">FreeUp POC</v-toolbar-title>
     <v-spacer />
-    <div>
-      <v-btn text v-if="!isAuthenticated" @click="$router.push('/login')">Login</v-btn>
-      <v-btn text v-if="!isAuthenticated" @click="$router.push('/register')">Register</v-btn>
-
-      <v-menu v-if="isAuthenticated" offset-y>
+    <div v-if="!isAuth">
+      <v-btn text @click="$router.push('/login')">Login</v-btn>
+      <v-btn text @click="$router.push('/register')">Register</v-btn>
+    </div>
+    <div v-else>
+      <v-menu offset-y>
         <template #activator="{ props }">
           <v-btn v-bind="props" text>
-            {{ userName }}
+            {{ displayName }}
             <v-icon right>mdi-menu-down</v-icon>
           </v-btn>
         </template>
         <v-list>
-          <v-list-item @click="logout">
+          <v-list-item @click="goProfile">
+            <v-list-item-title>Profile</v-list-item-title>
+          </v-list-item>
+          <v-list-item @click="doLogout">
             <v-list-item-title>Logout</v-list-item-title>
           </v-list-item>
         </v-list>
@@ -23,22 +26,29 @@
     </div>
   </v-app-bar>
 </template>
-
 <script setup>
 import { computed } from "vue";
 import { useStore } from "vuex";
-
 const store = useStore();
-const isAuthenticated = computed(() => store.getters["auth/isAuthenticated"]);
-const userName = computed(() => store.getters["auth/user"]?.name || store.getters["auth/user"]?.email || "User");
-
-function logout() {
+const isAuth = computed(() => store.getters["auth/isAuthenticated"]);
+const user = computed(() => store.getters["auth/user"]);
+const displayName = computed(() => (user.value?.name ? user.value.name : user.value?.email || "User"));
+function doLogout() {
   store.dispatch("auth/logout");
-  // redirect to login
+  // navigate to login
   window.location.href = "/login";
 }
+function goProfile() {
+  // placeholder: route to profile page when created
+  // router.push({ name: 'profile' });
+  alert("Profile page coming soon");
+}
 </script>
-
 <style scoped>
-/* small header tweaks if needed */
+.v-app-bar { position: sticky; top: 0; z-index: 10; }
 </style>
+
+
+
+
+

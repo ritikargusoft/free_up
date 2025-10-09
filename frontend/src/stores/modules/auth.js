@@ -1,5 +1,9 @@
-import { loginUser, registerUser } from "@/features/auth/api/authService";
-
+// import { loginUser, registerUser, logoutUser } from "@/features/auth/api/authService";
+import {
+  loginUser,
+  registerUser,
+  logoutUser,
+} from "../../features/auth/api/authService.js";
 export default {
   namespaced: true,
   state: () => ({
@@ -17,27 +21,40 @@ export default {
     },
     setAccessToken(state, token) {
       state.accessToken = token;
-      localStorage.setItem("accessToken", token);
+      if (token) localStorage.setItem("accessToken", token);
+      else localStorage.removeItem("accessToken");
     },
-    logout(state) {
+    clearAuth(state) {
       state.user = null;
       state.accessToken = null;
-      localStorage.clear();
+      localStorage.removeItem("user");
+      localStorage.removeItem("accessToken");
     },
   },
   actions: {
     async register({ commit }, data) {
       const res = await registerUser(data);
-      commit("setUser", res.user);
-      commit("setAccessToken", res.token);
+      const user = res.user || res;
+      const token = res.accessToken || res.token || null;
+      if (user) commit("setUser", user);
+      if (token) commit("setAccessToken", token);
+      return res;
     },
+
     async login({ commit }, data) {
       const res = await loginUser(data);
-      commit("setUser", res.user);
-      commit("setAccessToken", res.token);
+      const user = res.user || res;
+      const token = res.accessToken || res.token || null;
+      if (user) commit("setUser", user);
+      if (token) commit("setAccessToken", token);
+      return res;
     },
-    logout({ commit }) {
-      commit("logout");
+    async logout({ commit }) {
+      try {
+        await logoutUser();
+      } catch (err) {
+      }
+      commit("clearAuth");
     },
   },
 };

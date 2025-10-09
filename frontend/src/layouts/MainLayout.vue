@@ -13,6 +13,3 @@
 import TheHeader from "@/components/layout/TheHeader.vue";
 </script>
 
-<style scoped>
-/* small layout styles if necessary */
-</style>
