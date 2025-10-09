@@ -16,7 +16,8 @@ export async function loginUser(req, res) {
     // set refres token cookie
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
-      secure: true,
+      sameSite: 'lax',
+      secure: false,
       maxAge:
         Number(process.env.JWT_REFRESH_EXPIRES_MS) || 7 * 24 * 3600 * 1000,
     });
