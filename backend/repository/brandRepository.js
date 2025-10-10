@@ -7,7 +7,8 @@ export const createBrandsTable = async () => {
     brand_id SERIAL UNIQUE NOT NULL,
     name  VARCHAR(255) ,
    description TEXT,
-    created_at TIMESTAMP DEFAULT NOW()
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
     );
     `;
   await pool.query(query);

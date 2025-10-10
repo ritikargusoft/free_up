@@ -1,10 +1,10 @@
 import axios from "axios";
 import store from "../stores/index.js";
 
-const backednURL = Process.env.VITE_API_URL;
+const backednURL = "http://localhost:3000/";
 const api = axios.create({
   baseURL: backednURL,
-  withCredentials: true, 
+  withCredentials: true,
   headers: {
     "Content-Type": "application/json",
   },
