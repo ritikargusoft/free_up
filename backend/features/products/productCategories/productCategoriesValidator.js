@@ -13,6 +13,11 @@ export const deleteMappingSchema = Joi.object({
   category_id: Joi.number().integer().required(),
 });
 
+export const deleteCategorySchema = Joi.object({
+  product_id: Joi.number().integer().required(),
+});
+
+
 export const getCategoriesForProductSchema = Joi.object({
   product_id: Joi.number().integer().required(),
 });

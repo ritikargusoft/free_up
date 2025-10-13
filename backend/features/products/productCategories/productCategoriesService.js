@@ -73,6 +73,24 @@ export async function removeCategoryFromProduct(product_id, category_id) {
   return deleted;
 }
 
+export async function removeAllCategories(product_id) {
+  if (!product_id ) {
+    const e = new Error("product_id is required");
+    e.status = 400;
+    throw e;
+  }
+
+  const deleted = await productCategoryModel.deleteByProductId(
+    product_id
+  );
+  if (!deleted) {
+    const e = new Error("Mapping not found");
+    e.status = 404;
+    throw e;
+  }
+  return deleted;
+}
+
 // replace categories for a product (delete existing, then bulk insert new)
 export async function replaceCategoriesForProduct(
   product_id,

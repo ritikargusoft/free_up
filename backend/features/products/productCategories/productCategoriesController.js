@@ -34,6 +34,17 @@ export async function deleteCategoryMapping(req,res,next) {
     
 }
 
+export async function removeAllCategories(req,res,next) {
+    try {
+        const product_id = Number(req.params.product_id);
+        const deleted = await productCategoryService.removeAllCategories(product_id);
+        return res.status(200).json({deleted})
+    } catch (err) {
+        next(err)
+    }
+    
+}
+
 export async function replaceCategories(req,res,next) {
     try {
         const product_id = Number(req.body.product_id);

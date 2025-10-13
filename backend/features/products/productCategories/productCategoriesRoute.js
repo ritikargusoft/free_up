@@ -2,6 +2,7 @@ import express from "express";
 import { validate } from "../../../middleware/validateMiddleware.js";
 import {
   bulkAddCategoriesSchema,
+  deleteCategorySchema,
   deleteMappingSchema,
   getCategoriesForProductSchema,
 } from "./productCategoriesValidator.js";
@@ -9,6 +10,7 @@ import {
   addCategories,
   deleteCategoryMapping,
   getCategoriesForProduct,
+  removeAllCategories,
   replaceCategories,
 } from "./productCategoriesController.js";
 
@@ -19,6 +21,12 @@ router.get(
   "/product/:product_id",
   validate(getCategoriesForProductSchema, "params"),
   getCategoriesForProduct
+);
+
+router.delete(
+  "/delete/:product_id",
+  validate(deleteCategorySchema, "params"),
+  removeAllCategories
 );
 
 router.delete(
