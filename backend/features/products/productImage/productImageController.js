@@ -1,10 +1,8 @@
-
 import { v2 as cloudinary } from "cloudinary";
 import streamifier from "streamifier";
 import * as productImageService from "./productImageService.js";
-
-
-
+import { initCloudinary } from "../../../utils/cloudinaryConfig.js";
+initCloudinary(); 
 function uploadBufferToCloudinary(
   buffer,
   folder = "freeup/products",
@@ -39,6 +37,7 @@ function uploadBufferToCloudinary(
         return resolve(result);
       }
     );
+    // pipe buffer into upload stream
     try {
       streamifier.createReadStream(buffer).pipe(uploadStream);
     } catch (err) {
@@ -47,16 +46,12 @@ function uploadBufferToCloudinary(
     }
   });
 }
-
-
 export async function uploadProductImage(req, res, next) {
   try {
     if (!req.file || !req.file.buffer) {
-      return res
-        .status(400)
-        .json({
-          message: "file is required (send as form-data with key 'file')",
-        });
+      return res.status(400).json({
+        message: "file is required (send as form-data with key 'file')",
+      });
     }
     const product_id = Number(req.body.product_id);
     if (!product_id || Number.isNaN(product_id)) {
@@ -65,7 +60,6 @@ export async function uploadProductImage(req, res, next) {
         .json({ message: "product_id is required and must be a number" });
     }
     const is_thumbnail = String(req.body.is_thumbnail || "false") === "true";
-    // Upload buffer to Cloudinary
     let result;
     try {
       result = await uploadBufferToCloudinary(
@@ -77,12 +71,10 @@ export async function uploadProductImage(req, res, next) {
         "Cloudinary upload error:",
         uploadErr && uploadErr.message ? uploadErr.message : uploadErr
       );
-      return res
-        .status(502)
-        .json({
-          message: "Failed to upload image",
-          detail: uploadErr.message || String(uploadErr),
-        });
+      return res.status(502).json({
+        message: "Failed to upload image",
+        detail: uploadErr.message || String(uploadErr),
+      });
     }
     const imgUrl = result.secure_url || result.url || null;
     if (!imgUrl) {
@@ -100,7 +92,7 @@ export async function uploadProductImage(req, res, next) {
       width: result.width ?? null,
       height: result.height ?? null,
       size_bytes: result.bytes ?? null,
-      user: req.user, 
+      user: req.user, // authenticate middleware must have set this
     });
     return res.status(201).json(created);
   } catch (err) {
@@ -119,7 +111,6 @@ export async function listImagesForProduct(req, res, next) {
     next(err);
   }
 }
-
 export async function deleteImageHandler(req, res, next) {
   try {
     const image_uuid = req.params.image_uuid;

@@ -1,6 +1,5 @@
 import * as productImageModel from "./productImageModel.js";
 import pool from "../../../db/connectDB.js";
-
 export async function addImageRecord({
   product_id,
   img_url,
@@ -18,7 +17,6 @@ export async function addImageRecord({
   //   e.status = 403;
   //   throw e;
   // }
-
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
@@ -29,24 +27,24 @@ export async function addImageRecord({
       );
     }
     const q = `
-    INSERT INTO product_image
-    (product_id, img_url, provider, public_id, is_thumbnail, width, height, size_bytes, created_at)
-    VALUES($1,$2,$3,$4,$5,$6,$7,$8, NOW())
-    RETURNING image_uuid, image_id, product_id, img_url, product_id,img_url, provider, public_id, is_thumbnail,width, height, size_bytes, created_at
+      INSERT INTO product_image
+        (product_id, img_url, provider, public_id, is_thumbnail, width, height, size_bytes, created_at)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NOW())
+      RETURNING image_uuid, image_id, product_id, img_url, provider, public_id, is_thumbnail, width, height, size_bytes, created_at
     `;
     const vals = [
       product_id,
       img_url,
-      provider,
-      public_id,
-      is_thumbnail,
-      width,
-      height,
-      size_bytes,
+      provider ?? "cloudinary",
+      public_id ?? null,
+      Boolean(is_thumbnail),
+      width ?? null,
+      height ?? null,
+      size_bytes ?? null,
     ];
     const r = await client.query(q, vals);
     await client.query("COMMIT");
-    return r.rows[0];
+    return r.rows[0] ?? null;
   } catch (err) {
     await client.query("ROLLBACK");
     throw err;
@@ -54,7 +52,6 @@ export async function addImageRecord({
     client.release();
   }
 }
-
 export async function listImages(product_id) {
   const exists = await productImageModel.productExists(product_id);
   if (!exists) {
@@ -64,7 +61,6 @@ export async function listImages(product_id) {
   }
   return await productImageModel.listImagesByProductId(product_id);
 }
-
 export async function deleteImage(
   image_uuid,
   user,
@@ -91,6 +87,6 @@ export async function deleteImage(
       throw e;
     }
   }
-  const deleted = await model.deleteImageByUuid(image_uuid);
+  const deleted = await productImageModel.deleteImageByUuid(image_uuid);
   return deleted;
 }
