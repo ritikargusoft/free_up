@@ -9,15 +9,15 @@ import { createUsersTable } from "../repository/userRepository.js";
 
 const createTables = async () => {
   try {
-     createUsersTable();
-     createProductsTable(),
-       createProductImageTable(),
-       createBrandsTable(),
-       createCategoryTable(),
-       createProductCategoriesTable(),
-       createOrderItemTable(),
-       createOrdersTable(),
-      console.log("Tables Created");
+    createUsersTable();
+    createProductsTable(),
+      createProductImageTable(),
+      createBrandsTable(),
+      createCategoryTable(),
+      createProductCategoriesTable();
+    //  createOrderItemTable(),
+    //  createOrdersTable(),
+    console.log("Tables Created");
   } catch (error) {
     console.log(error);
   }
