@@ -10,19 +10,22 @@ import {
   deleteImageSchema,
   listImagesSchema,
 } from "./productImageValidator.js";
+import { authenticate } from "../../../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/upload", upload.single("file"), uploadProductImage);
+router.post("/upload", upload.single("file"), authenticate,uploadProductImage);
 router.get(
   "/product/:product_id",
   validate(listImagesSchema, "params"),
+  authenticate,
   listImagesForProduct
 );
 
 router.delete(
   "/:image_uuid",
   validate(deleteImageSchema, "params"),
+  authenticate,
   deleteImageHandler
 );
 

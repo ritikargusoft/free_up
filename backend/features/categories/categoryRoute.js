@@ -13,6 +13,7 @@ import {
   createCategorySchema,
   updateCategorySchema,
 } from "./categoryValidator.js";
+import { authenticate } from "../../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -24,9 +25,9 @@ router.get(
 );
 
 router.get("/:id", getCategoryByUuid);
-router.post("/", validate(createCategorySchema), createCategory);
+router.post("/", authenticate,validate(createCategorySchema), createCategory);
 
-router.put("/:id", validate(updateCategorySchema), updateCategory);
-router.delete("/:id", deleteCategory);
+router.put("/:id", authenticate,validate(updateCategorySchema), updateCategory);
+router.delete("/:id", authenticate,deleteCategory);
 
 export default router;

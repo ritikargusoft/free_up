@@ -13,6 +13,7 @@ import {
   getBrandByUuid,
   updateBrand,
 } from "./brandController.js";
+import { authenticate } from "../../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -24,9 +25,9 @@ router.get(
 );
 
 router.get("/:id", getBrandByUuid);
-router.post("/", validate(createBrandSchema), createBrand);
+router.post("/",authenticate, validate(createBrandSchema), createBrand);
 
-router.put("/:id", validate(updateBrandSchema), updateBrand);
-router.delete("/:id", deleteBrand);
+router.put("/:id", authenticate,validate(updateBrandSchema), updateBrand);
+router.delete("/:id", authenticate,deleteBrand);
 
 export default router;
