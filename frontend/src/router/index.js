@@ -4,6 +4,8 @@ import RegisterPage from "@/features/auth/pages/RegisterPage.vue";
 import HomePage from "../features/home/pages/HomePage.vue";
 import store from "../stores/index.js";
 import ProfilePage from "../features/auth/pages/ProfilePage.vue";
+import ProductList from "../features/products/pages/ProductList.vue";
+import ProductCreate from "../features/products/pages/ProductCreate.vue";
 const routes = [
   {
     path: "/",
@@ -23,11 +25,23 @@ const routes = [
     component: RegisterPage,
     meta: { layout: "auth" },
   },
-    {
+  {
     path: "/profile",
     name: "profile",
     component: ProfilePage,
     meta: { requiresAuth: "true" },
+  },
+  {
+    path: "/products",
+    name: "product-list",
+    component: ProductList,
+    meta: { layout: "auth" },
+  },
+  {
+    path: "/products/create",
+    name: "product-create",
+    component: ProductCreate,
+    meta: { layout: "auth" },
   },
   { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
@@ -35,7 +49,6 @@ const router = createRouter({
   history: createWebHistory(),
   routes,
 });
-
 
 // guard
 router.beforeEach((to, from, next) => {
