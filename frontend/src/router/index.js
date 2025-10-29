@@ -35,13 +35,13 @@ const routes = [
     path: "/products",
     name: "product-list",
     component: ProductList,
-    meta: { layout: "auth" },
+    meta: { requiresAuth: "true" },
   },
   {
     path: "/products/create",
     name: "product-create",
     component: ProductCreate,
-    meta: { layout: "auth" },
+    meta: { requiresAuth: "true" },
   },
   { path: "/:pathMatch(.*)*", redirect: "/" },
 ];

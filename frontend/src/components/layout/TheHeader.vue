@@ -1,10 +1,13 @@
 <template>
-  <v-app-bar color="primary" dark>
-    <v-toolbar-title class="mr-6">FreeUp POC</v-toolbar-title>
+  <v-app-bar color="primary " dark>
+    <div class="d-flex w-100 justify-space-between	mx-2 " >
+    <v-toolbar-title @click="$router.push('/login')" class="mr-6"
+      >FreeUp POC</v-toolbar-title
+    >
 
-    <v-btn text @click="$router.push({ name: 'product-list' })">Products</v-btn>
-
-    <v-spacer />
+    <v-spacer></v-spacer>
+<div class="d-flex ">
+    <v-btn @click="$router.push({ name: 'product-list' })">Products</v-btn>
 
     <div v-if="!isAuth">
       <v-btn text @click="$router.push('/login')">Login</v-btn>
@@ -31,6 +34,10 @@
         </v-list>
       </v-menu>
     </div>
+
+    </div>
+
+    </div>
   </v-app-bar>
 </template>
 
@@ -44,7 +51,9 @@ const router = useRouter();
 
 const isAuth = computed(() => store.getters["auth/isAuthenticated"]);
 const user = computed(() => store.getters["auth/user"] || {});
-const displayName = computed(() => user.value.name || user.value.email || "User");
+const displayName = computed(
+  () => user.value.name || user.value.email || "User"
+);
 
 function doLogout() {
   store.dispatch("auth/logout");
@@ -58,5 +67,9 @@ function goProducts() {
 }
 </script>
 <style scoped>
-.v-app-bar { position: sticky; top: 0; z-index: 10; }
+.v-app-bar {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
 </style>
