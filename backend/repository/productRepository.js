@@ -19,6 +19,7 @@ export const createProductsTable = async () => {
         product_id SERIAL UNIQUE NOT NULL,
         seller_uuid UUID NOT NULL,
         brand_id INT,
+        price NUMERIC(12,2),
         product_name VARCHAR(255) NOT NULL,
         description TEXT,
         condition VARCHAR(255) DEFAULT 'used',

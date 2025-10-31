@@ -2,25 +2,35 @@
   background-color: var(--v-theme-primary) !important;
   border-color: var(--v-theme-primary) !important;
 }
-/* text white utility */
 .text-white {
   color: #ffffff !important;
 }
-/* If you want an outlined/flat button using classes rather than color prop */
 .v-btn.bg-primary {
-  color: #000; /* default text color on the theme; override below when using text-white */
+  color: #000; 
 }
-/* ensure v-btn respects .text-white when used */
 .v-btn.text-white,
 .v-btn .text-white,
 .v-btn.text-white * {
   color: #fff !important;
 }
-/* Optional: make small helper classes for spacing consistent with Vuetify */
-.mt-2 { margin-top: 8px !important; }
-.mb-2 { margin-bottom: 8px !important; }
+.mt-2 {
+  margin-top: 8px !important;
+}
+.mb-2 {
+  margin-bottom: 8px !important;
+}
 
+.the-header {
+  position: sticky !important;
+  top: 0;
+  z-index: 200 !important;
+  box-shadow: 0 2px 8px rgba(2, 3, 23, 0.8);
+}
+.primary-light-bg{
+  background-color: rgba(var(--v-theme-primary),0.40) !important;
+}
 
-
-
-
+.primary-light-bg:hover{
+  background-color: rgba(var(--v-theme-primary),0.80) !important;
+  cursor: pointer;
+}

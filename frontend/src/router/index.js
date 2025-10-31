@@ -6,6 +6,8 @@ import store from "../stores/index.js";
 import ProfilePage from "../features/auth/pages/ProfilePage.vue";
 import ProductList from "../features/products/pages/ProductList.vue";
 import ProductCreate from "../features/products/pages/ProductCreate.vue";
+import ProductShow from "../features/products/pages/ProductShow.vue"; 
+import MyProducts from "../features/products/pages/MyProducts.vue"; 
 const routes = [
   {
     path: "/",
@@ -31,18 +33,32 @@ const routes = [
     component: ProfilePage,
     meta: { requiresAuth: "true" },
   },
-  {
+ 
+ {
     path: "/products",
     name: "product-list",
     component: ProductList,
-    meta: { requiresAuth: "true" },
+    meta: { requiresAuth: true }, 
   },
   {
     path: "/products/create",
     name: "product-create",
     component: ProductCreate,
-    meta: { requiresAuth: "true" },
+    meta: { requiresAuth: true },
   },
+  {
+    path: "/products/mine",
+    name: "product-mine",
+    component: MyProducts,
+    meta: {requiresAuth: true },
+  },
+  {
+    path: "/products/:id",
+    name: "product-show",
+    component: ProductShow,
+    meta: {  requiresAuth: true },
+  },
+
   { path: "/:pathMatch(.*)*", redirect: "/" },
 ];
 const router = createRouter({
