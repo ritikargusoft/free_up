@@ -6,9 +6,22 @@
           <v-card-title>Create Product</v-card-title>
           <v-card-text>
             <v-form ref="formRef" @submit.prevent="submit">
-              <v-text-field v-model="form.product_name" label="Product name" required />
-              <v-textarea v-model="form.description" label="Description" rows="3" />
-              <brand-autocomplete v-model="form.brand_id" />
+              <v-text-field
+                v-model="form.product_name"
+                label="Product name"
+                required
+              />
+              <v-textarea
+                v-model="form.description"
+                label="Description"
+                rows="3"
+              />
+              <v-text-field
+                v-model="form.brand_name"
+                label="Brand"
+                placeholder="e.g. Zara"
+                clearable
+              />
               <category-select v-model="form.categories" />
               <v-text-field
                 v-model.number="form.price"

@@ -26,14 +26,11 @@ import { autoCompleteBrands } from "../api/productService.js";
 const props = defineProps({
   brandId: [Number, String, null],
   brandName: [String, null],
-  brandId: [Number, String, null],
-  brandName: [String, null],
 });
 const emit = defineEmits(["update:brandId", "update:brandName"]);
 const search = ref("");
 const options = ref([]);
 const loading = ref(false);
-
 const selectedId = ref(props.brandId ?? null);
 watch(() => props.brandId, (v) => (selectedId.value = v));
 watch(selectedId, (v) => {
@@ -49,10 +46,8 @@ let timer = null;
 async function onSearch(q) {
   clearTimeout(timer);
   search.value = q;
-  search.value = q;
   if (!q || q.length < 1) {
     options.value = [];
-    emit("update:brandName", q || null);
     emit("update:brandName", q || null);
     return;
   }
@@ -64,17 +59,11 @@ async function onSearch(q) {
       console.debug("brand autocomplete for", q, " => ", options.value);
     } catch (err) {
       console.error("brand autocomplete error", err);
-      console.error("brand autocomplete error", err);
       options.value = [];
     } finally {
       loading.value = false;
     }
   }, 250);
-}
-function onBlur() {
-  if (!selectedId.value && search.value && search.value.trim()) {
-    emit("update:brandName", search.value.trim());
-  }
 }
 function onBlur() {
   if (!selectedId.value && search.value && search.value.trim()) {

@@ -5,7 +5,7 @@ import {
   updateProduct,
   deleteProduct,
   uploadProductImage,
-  listProductImages, 
+  listProductImages,
 } from "../../features/products/api/productService.js";
 const state = () => ({
   list: [],

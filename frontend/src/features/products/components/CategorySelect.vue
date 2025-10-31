@@ -6,7 +6,6 @@
     multiple
     chips
     clearable
-    
     hide-no-data
     :loading="loading"
     :search-input.sync="search"
@@ -16,7 +15,6 @@
 </template>
 <script setup>
 import { ref, computed, watchEffect } from "vue";
-import { ref, computed, watchEffect } from "vue";
 import { autoCompleteCategories } from "../api/productService.js";
 const props = defineProps({
   modelValue: { type: Array, default: () => [] },
@@ -25,10 +23,8 @@ const emit = defineEmits(["update:modelValue"]);
 const search = ref("");
 const options = ref([]);
 const loading = ref(false);
-// computed getter/setter bound to v-combobox v-model
 const localModel = computed({
   get() {
-    // Ensure parent always receives a plain array of strings/numbers/objects as-is
     return props.modelValue ?? [];
   },
   set(newVal) {
@@ -71,6 +67,4 @@ function onSearch(q) {
 watchEffect(() => {
   onSearch(search.value);
 });
-
-
 </script>
