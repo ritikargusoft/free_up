@@ -49,7 +49,9 @@ onMounted(async () => {
 });
 
 function editProduct(uuid) {
- 
+  // you need edit page or reuse create page in edit mode
+  // e.g. /products/:id/edit
+  // for now navigate to product show
   router.push({ name: "product-show", params: { id: uuid } });
 }
 </script>

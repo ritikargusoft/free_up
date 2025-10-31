@@ -25,27 +25,12 @@ const props = defineProps({ product: Object });
 const router = useRouter();
 
 const thumb = computed(() => {
-  return (
-    props.product?.thumbnail_url ||
-    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-      props.product?.product_name || "P"
-    )}&background=FFD600&color=000000`
-  );
+  if (props.product?.categories && props.product.categories.length) {
+  }
+  return props.product?.thumbnail_url || `https://ui-avatars.com/api/?name=${encodeURIComponent(props.product.product_name||'P')}&background=FFD600&color=000000`;
 });
 
 function goToProduct() {
-  if (
-    router.resolve({
-      name: "product-show",
-      params: { id: props.product.product_uuid },
-    }).matched.length
-  ) {
-    router.push({
-      name: "product-show",
-      params: { id: props.product.product_uuid },
-    });
-  } else {
-    router.push(`/products/${props.product.product_uuid}`);
-  }
+  router.push({ name: "product-show", params: { id: props.product.product_uuid } });
 }
 </script>

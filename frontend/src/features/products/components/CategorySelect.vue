@@ -6,6 +6,7 @@
     multiple
     chips
     clearable
+    
     hide-no-data
     :loading="loading"
     :search-input.sync="search"
@@ -14,6 +15,7 @@
   />
 </template>
 <script setup>
+import { ref, computed, watchEffect } from "vue";
 import { ref, computed, watchEffect } from "vue";
 import { autoCompleteCategories } from "../api/productService.js";
 const props = defineProps({
@@ -69,4 +71,6 @@ function onSearch(q) {
 watchEffect(() => {
   onSearch(search.value);
 });
+
+
 </script>
