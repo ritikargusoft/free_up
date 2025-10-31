@@ -50,6 +50,79 @@ async function resolveCategoryIds(categories = []) {
   return ids;
 }
 
+// export async function createProduct(data, user) {
+//   const seller_uuid = user?.user_uuid;
+//   if (!seller_uuid) {
+//     const e = new Error("Invalid user");
+//     e.status = 401;
+//     throw e;
+//   }
+
+//   const brandId = await resolveBrandId({
+//     brand_id: data.brand_id,
+//     brand_name: data.brand_name,
+//   });
+
+//   const categoryIds = await resolveCategoryIds(data.categories || []);
+
+//   const client = await pool.connect();
+//   try {
+//     await client.query("BEGIN");
+//     const q = `
+//       INSERT INTO products
+//         (seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience,price, created_at, updated_at)
+//       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW(), NOW())
+//       RETURNING product_uuid, product_id, seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience, price,created_at, updated_at
+//     `;
+//     const vals = [
+//       seller_uuid,
+//       brandId,
+//       data.product_name,
+//       data.description ?? null,
+//       data.condition ?? "used",
+//       data.status ?? "available",
+//       data.available_quantity ?? 1,
+//       data.target_audience ?? null,
+//     ];
+
+//     const pr = await client.query(q, vals);
+//     const product = pr.rows[0];
+
+//     if (categoryIds.length > 0) {
+//       const placeholders = [];
+//       const vals2 = [];
+//       let idx = 1;
+
+//       for (const cid of categoryIds) {
+//         placeholders.push(`($${idx++}, $${idx++}, NOW())`);
+//         vals2.push(product.product_id, cid);
+//       }
+//       const insertQ = `
+//         INSERT INTO product_categories (product_id, category_id,created_at)
+//         VALUES ${placeholders.join(",")}
+//         ON CONFLICT (product_id, category_id) DO NOTHING
+//         `;
+//       await client.query(insertQ, vals2);
+//     }
+//     await client.query("COMMIT");
+
+//     const full = await productModel.getProductByUuid(product.product_uuid);
+//     const catQ = `
+//     SELECT c.category_id, c.category_uuid, c.name
+//     FROM product_categories pc
+//     JOIN category c ON c.category_id = pc.category_id
+//     WHERE pc.product_id = $1`;
+
+//     const catRes = await pool.query(catQ, [product.product_id]);
+//     full.categories = catRes.rows || [];
+//     return full;
+//   } catch (err) {
+//     await client.query("ROLLBACK");
+//     throw err;
+//   } finally {
+//     client.release();
+//   }
+// }
 export async function createProduct(data, user) {
   const seller_uuid = user?.user_uuid;
   if (!seller_uuid) {
@@ -57,22 +130,27 @@ export async function createProduct(data, user) {
     e.status = 401;
     throw e;
   }
-
   const brandId = await resolveBrandId({
     brand_id: data.brand_id,
     brand_name: data.brand_name,
   });
-
   const categoryIds = await resolveCategoryIds(data.categories || []);
-
+  // Normalize numeric inputs
+  const availableQuantity = Number.isFinite(Number(data.available_quantity))
+    ? Number(data.available_quantity)
+    : 1;
+  const price =
+    data.price !== undefined && data.price !== null && data.price !== ""
+      ? Number(data.price)
+      : null;
   const client = await pool.connect();
   try {
     await client.query("BEGIN");
     const q = `
       INSERT INTO products
-        (seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience, created_at, updated_at)
-      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NOW(), NOW())
-      RETURNING product_uuid, product_id, seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience, created_at, updated_at
+        (seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience, price, created_at, updated_at)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW(), NOW())
+      RETURNING product_uuid, product_id, seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience, price, created_at, updated_at
     `;
     const vals = [
       seller_uuid,
@@ -81,38 +159,35 @@ export async function createProduct(data, user) {
       data.description ?? null,
       data.condition ?? "used",
       data.status ?? "available",
-      data.available_quantity ?? 1,
+      availableQuantity,
       data.target_audience ?? null,
+      price,
     ];
-
     const pr = await client.query(q, vals);
     const product = pr.rows[0];
-
     if (categoryIds.length > 0) {
       const placeholders = [];
       const vals2 = [];
       let idx = 1;
-
       for (const cid of categoryIds) {
         placeholders.push(`($${idx++}, $${idx++}, NOW())`);
         vals2.push(product.product_id, cid);
       }
       const insertQ = `
-        INSERT INTO product_categories (product_id, category_id,created_at)
+        INSERT INTO product_categories (product_id, category_id, created_at)
         VALUES ${placeholders.join(",")}
         ON CONFLICT (product_id, category_id) DO NOTHING
-        `;
+      `;
       await client.query(insertQ, vals2);
     }
     await client.query("COMMIT");
-
     const full = await productModel.getProductByUuid(product.product_uuid);
     const catQ = `
-    SELECT c.category_id, c.category_uuid, c.name
-    FROM product_categories pc
-    JOIN category c ON c.category_id = pc.category_id
-    WHERE pc.product_id = $1`;
-
+      SELECT c.category_id, c.category_uuid, c.name
+      FROM product_categories pc
+      JOIN category c ON c.category_id = pc.category_id
+      WHERE pc.product_id = $1
+    `;
     const catRes = await pool.query(catQ, [product.product_id]);
     full.categories = catRes.rows || [];
     return full;
@@ -123,7 +198,6 @@ export async function createProduct(data, user) {
     client.release();
   }
 }
-
 export async function getProductByUuid(product_uuid) {
   const p = await productModel.getProductByUuid(product_uuid);
   if (!p) {
@@ -147,61 +221,6 @@ export async function listProducts(filters = {}) {
   return await productModel.listProducts(filters);
 }
 
-// export async function updateProductByUuid(product_uuid, data, user) {
-//   const current = await productModel.getProductByUuid(product_uuid);
-//   if (!current) {
-//     const e = new Error("Product not found");
-//     e.status = 404;
-//     throw e;
-//   }
-
-//   if (String(current.seller_uuid) !== String(user.user_uuid) && !user.isAdmin) {
-//     const e = new Error("Not authorized");
-//     e.status = 403;
-//     throw e;
-//   }
-
-//   const brandId = await resolveBrandId({
-//     brand_id: data.brand_id,
-//     brand_name: data.brand_name,
-//   });
-
-//   if (brandId) data.brand_id = brandId;
-
-//   const updatedRow = await productModel.updateProductByUuid(product_uuid, data);
-//   if (Array.isArray(data.categories)) {
-//     const categoryIds = await resolveCategoryIds(data.categories);
-//     const client = await pool.connect();
-
-//     try {
-//       await client.query("BEGIN");
-//       await client.query(
-//         `DELETE FROM product_categories WHERE product_id = $1`,
-//         [current.product_id]
-//       );
-//       if (categoryIds.length > 0) {
-//         const placeholders = [];
-//         const vals = [];
-//         let idx = 1;
-//         for (const cid of categoryIds) {
-//           placeholders.push(`($${idx++}, $${idx++}, NOW())`);
-//           vals.push(current.product_id, cid);
-//         }
-//         const insertQ = ` INSERT INTO product_categories (product_id, category_id, created_at) VALUES ${placeholders.join(
-//           ","
-//         )}
-//             ON CONFLICT DO NOTHING`;
-//         await client.query(insertQ, vals);
-//       }
-//       await client.query("COMMIT");
-//     } catch (err) {
-//       await client.query("ROLLBACK");
-//       throw err;
-//     } finally {
-//       client.release();
-//     }
-//   }
-// }
 
 export async function updateProductByUuid(product_uuid_or_id, data, user) {
   // resolve product by id or uuid
@@ -268,22 +287,7 @@ export async function updateProductByUuid(product_uuid_or_id, data, user) {
   return await productModel.getProductByUuid(targetUuid);
 }
 
-// export async function deleteProduct(product_uuid, user) {
-//   const current = await productModel.getProductByUuid(product_uuid);
-//   if (!current) {
-//     const e = new Error("Product not found");
-//     e.status = 404;
-//     throw e;
-//   }
 
-//     if (String(current.seller_uuid) !== String(user.user_uuid) && !user.isAdmin) {
-//       const e = new Error("Not authorized");
-//       e.status = 403;
-//       throw e;
-//     }
-//   const deleted = await productModel.deleteProductByUuid(product_uuid);
-//   return deleted;
-// }
 
 export async function deleteProduct(product_uuid_or_id, user) {
   const current = await resolveProductByParam(product_uuid_or_id);

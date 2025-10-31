@@ -12,9 +12,9 @@ export async function createProductRow({
 }) {
   const q = `
     INSERT INTO products
-      (seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience, created_at, updated_at)
-    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,NOW(), NOW())
-    RETURNING product_uuid, product_id, seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience, created_at, updated_at
+      (seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience, price, created_at, updated_at)
+    VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,NOW(), NOW())
+    RETURNING product_uuid, product_id, seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience,price, created_at, updated_at
   `;
   const vals = [
     seller_uuid,
@@ -54,34 +54,7 @@ export async function getProductById(product_id) {
   return r.rows[0] ?? null;
 }
 
-// const product = await pool.query(
-//   "SELECT * FROM products WHERE product_uuid = $1",
-//   [uuid]
-// );
-// const categories = await pool.query(
-//   `SELECT c.category_id, c.name
-//    FROM category c
-//    JOIN product_categories pc ON pc.category_id = c.category_id
-//    WHERE pc.product_id = $1`,
-//   [product.rows[0].product_id]
-// );
-// return { ...product.rows[0], categories: categories.rows };
 
-// const categories_data = await pool.query(
-//   `
-// SELECT
-//   p.*,
-//   b.name AS brand_name,
-//   array_remove(array_agg(c.name), NULL) AS category_names,
-//   array_remove(array_agg(c.category_id), NULL) AS category_ids
-// FROM products p
-// LEFT JOIN brands b ON p.brand_id = b.brand_id
-// LEFT JOIN product_categories pc ON pc.product_id = p.product_id
-// LEFT JOIN category c ON c.category_id = pc.category_id
-// WHERE p.product_uuid = $1
-// GROUP BY p.product_uuid, p.product_id, b.name;
-// `
-// );
 
 export async function listProducts({
   limit = 20,
@@ -170,6 +143,7 @@ export async function updateProductByUuid(
     available_quantity = null,
     brand_id = null,
     target_audience = null,
+    price = null,
   } = {}
 ) {
   const q = `
@@ -182,6 +156,7 @@ export async function updateProductByUuid(
       available_quantity= COALESCE($6, available_quantity),
       brand_id          = COALESCE($7, brand_id),
       target_audience   = COALESCE($8, target_audience),
+      price   = COALESCE($8, price),
       updated_at        = NOW()
     WHERE product_uuid = $1
     RETURNING product_uuid, product_id, seller_uuid, brand_id, product_name, description, condition, status, available_quantity, target_audience, created_at, updated_at
@@ -195,6 +170,7 @@ export async function updateProductByUuid(
     available_quantity ?? null,
     brand_id ?? null,
     target_audience ?? null,
+    price ?? null,
   ];
   const r = await pool.query(q, vals);
   return r.rows[0] ?? null;

@@ -5,15 +5,27 @@ export const createProductSchema = Joi.object({
   description: Joi.string().allow("", null).optional(),
   brand_id: Joi.number().integer().positive().optional().allow(null),
   brand_name: Joi.string().trim().optional().allow("", null),
-  categories: Joi.array().items(
-     Joi.alternatives().try(Joi.number().integer().positive(), Joi.string().trim())
-  ).optional().default([]),
+  categories: Joi.array()
+    .items(
+      Joi.alternatives().try(
+        Joi.number().integer().positive(),
+        Joi.string().trim()
+      )
+    )
+    .optional()
+    .default([]),
   condition: Joi.string().valid("used", "new").optional().default("used"),
-  status: Joi.string().valid("available", "sold").optional().default("available"),
+  status: Joi.string()
+    .valid("available", "sold")
+    .optional()
+    .default("available"),
   available_quantity: Joi.number().integer().min(0).optional().default(1),
-  target_audience: Joi.string().valid("male", "female", "kids", "unisex").optional().default("unisex"),
+  price: Joi.number().min(0).required(),
+  target_audience: Joi.string()
+    .valid("male", "female", "kids", "unisex")
+    .optional()
+    .default("unisex"),
 });
-
 
 export const updateProductSchema = Joi.object({
   product_name: Joi.string().trim().min(1).max(255).optional(),

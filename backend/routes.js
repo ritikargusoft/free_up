@@ -10,7 +10,7 @@ router.use("/users", userRoute);
 router.use("/brands", brandRoutes);
 router.use("/category", categoryRoutes);
 router.use("/product-categories", productCategoryRoutes);
-router.use("/product-Images", productImageRoutes);
+router.use("/product-image", productImageRoutes);
 router.use("/products", products);
 
 export default router;

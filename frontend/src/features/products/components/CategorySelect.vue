@@ -1,55 +1,76 @@
-
 <template>
   <v-combobox
-    v-model="selected"
+    v-model="localModel"
     :items="options"
     label="Categories"
     multiple
     chips
+    clearable
     hide-no-data
     :loading="loading"
     :search-input.sync="search"
-    @update:search-input="onSearch"
     item-text="name"
     item-value="category_id"
   />
 </template>
-
 <script setup>
-import { ref, watch } from "vue";
+import { ref, computed, watchEffect } from "vue";
 import { autoCompleteCategories } from "../api/productService.js";
-
 const props = defineProps({
   modelValue: { type: Array, default: () => [] },
 });
 const emit = defineEmits(["update:modelValue"]);
-
 const search = ref("");
 const options = ref([]);
 const loading = ref(false);
-const selected = ref([...props.modelValue]);
-
-watch(() => props.modelValue, (v) => (selected.value = [...v]));
-watch(selected, (v) => emit("update:modelValue", v));
-
-let timer;
+// computed getter/setter bound to v-combobox v-model
+const localModel = computed({
+  get() {
+    // Ensure parent always receives a plain array of strings/numbers/objects as-is
+    return props.modelValue ?? [];
+  },
+  set(newVal) {
+    // normalize: trim strings, remove empty
+    const cleaned = (newVal || []).map((v) => {
+      if (typeof v === "string") return v.trim();
+      if (v && typeof v === "object") {
+        // keep category object or id
+        return v;
+      }
+      return v;
+    }).filter((x) => (typeof x === "string" ? x.length > 0 : x !== null && x !== undefined));
+    // emit only if different to prevent loops
+    try {
+      const curr = JSON.stringify(props.modelValue || []);
+      const next = JSON.stringify(cleaned || []);
+      if (curr !== next) emit("update:modelValue", cleaned);
+    } catch (e) {
+      emit("update:modelValue", cleaned);
+    }
+  }
+});
+let timer = null;
+async function fetchOptions(q) {
+  loading.value = true;
+  try {
+    const res = await autoCompleteCategories(q, 8);
+    // ensure returned items are in shape {category_id, name}
+    options.value = Array.isArray(res) ? res : [];
+  } catch (err) {
+    options.value = [];
+  } finally {
+    loading.value = false;
+  }
+}
 function onSearch(q) {
   clearTimeout(timer);
   if (!q || q.length < 1) {
-    // do not fetch until user types
     options.value = [];
     return;
   }
-  timer = setTimeout(async () => {
-    loading.value = true;
-    try {
-      const res = await autoCompleteCategories(q, 8);
-      options.value = res;
-    } catch {
-      options.value = [];
-    } finally {
-      loading.value = false;
-    }
-  }, 250);
+  timer = setTimeout(() => fetchOptions(q), 250);
 }
+watchEffect(() => {
+  onSearch(search.value);
+});
 </script>
