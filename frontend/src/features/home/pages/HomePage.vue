@@ -1,94 +1,237 @@
 <template>
-  <v-container fluid class="pa-4">
-    <v-row class="d-flex justify-center mb-4" justify="center">
-      <v-col class="" cols="12" md="10">
-        <div class="d-flex justify-space-between flex-wrap">
-          <v-chip
-            v-for="a in audiences"
-            variant="text"
-            :key="a.key"
-            class="ma-1 pa-2 h-25 rounded-xl primary-light-bg"
-            @click="onAudience(a.key)"
-          >
-            <div class="d-flex ma-1 align-center">
-              <v-avatar size="100" class="mr-3">
-                <v-img :src="a.img" class="object-center"></v-img>
-              </v-avatar>
-              <div class="d-flex flex-column">
-                <span class="text-subtitle-1 font-weight-thin">{{
-                  a.label
-                }}</span>
-              </div>
-            </div>
-          </v-chip>
-        </div>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="12">
-        <v-sheet class="pa-8 elevation-2" rounded>
-          <div class="d-flex align-center justify-space-between">
-            <div>
-              <h2 class="mb-2">Discover pre-loved finds</h2>
-              <div class="mb-4">
-                Filtered, curated, and ready to ship — find great second-hand
-                items from sellers near you.
-              </div>
+  <v-container
+    fluid
+    class="pa-0 mt-12"
+    style="
+      background: #f6f8f7;
+      color: #0d1b14;
+      min-height: 100vh;
+      font-family: 'Plus Jakarta Sans', system-ui, -apple-system, 'Segoe UI',
+        Roboto, Arial;
+    "
+  >
+    <v-row justify="center">
+      <v-col cols="12" md="10" class="py-10 px-4">
+        <v-row align="center" class="flex-nowrap" style="gap: 40px">
+          <v-col cols="12" md="7" class="pa-0">
+            <v-chip
+              small
+              class="mb-3 font-weight-bold"
+              style="background: rgba(19, 236, 128, 0.12)"
+            >
+              <v-icon start size="16">mdi-check-circle</v-icon>
+              Verified Sustainable
+            </v-chip>
+
+            <h1
+              class="font-weight-black mb-4"
+              style="
+                font-size: 3.2rem;
+                line-height: 0.98;
+                letter-spacing: -0.02em;
+              "
+            >
+              Give Pre-Loved Items a
+              <span
+                style="
+                  background: linear-gradient(90deg, #13ec80, #009e5f 70%);
+                  -webkit-background-clip: text;
+                  background-clip: text;
+                  color: transparent;
+                "
+              >
+                New Story.
+              </span>
+            </h1>
+
+            <p
+              class="mb-5"
+              style="max-width: 520px; color: rgba(13, 27, 20, 0.6)"
+            >
+              Buy and sell the best brands at a fraction of the price. Join the
+              circular fashion revolution today.
+            </p>
+
+            <div class="d-flex mb-5" style="gap: 12px">
               <v-btn
-                color="primary"
-                class="mr-2"
+                size="large"
+                color="#13ec80"
+                class="text-black rounded-pill px-8"
+                elevation="3"
                 @click="$router.push({ name: 'product-list' })"
-                >Shop All</v-btn
               >
-              <v-btn outlined @click="$router.push({ name: 'product-create' })"
-                >Sell an item</v-btn
+                Shop Now
+              </v-btn>
+
+              <v-btn
+                size="large"
+                variant="outlined"
+                class="rounded-pill px-8"
+                @click="$router.push({ name: 'product-create' })"
               >
+                Sell Item
+              </v-btn>
             </div>
-            <v-img :src="banner01" height="450px" loading="lazy"> </v-img>
-          </div>
-        </v-sheet>
+
+            <div class="d-flex align-center" style="gap: 14px">
+              <div class="d-flex align-center">
+                <v-avatar
+                  v-for="(u, i) in sampleAvatars"
+                  :key="i"
+                  size="40"
+                  class="elevation-2"
+                  :style="i > 0 ? 'margin-left:-10px' : ''"
+                >
+                  <v-img :src="u" />
+                </v-avatar>
+                <div
+                  class="ml-2 px-3 py-1 rounded-pill font-weight-bold"
+                  style="background: #13ec80"
+                >
+                  +2k
+                </div>
+              </div>
+              <span style="color: rgba(13, 27, 20, 0.6)">
+                Happy sellers this week
+              </span>
+            </div>
+          </v-col>
+
+          <!-- RIGHT IMAGE -->
+          <v-col cols="12" md="5" class="pa-0 d-flex justify-center">
+            <div
+              style="
+                width: 100%;
+                max-width: 520px;
+                aspect-ratio: 4/3;
+                background-size: cover;
+                background-position: center;
+                border-radius: 28px;
+                position: relative;
+                overflow: hidden;
+                box-shadow: 0 30px 50px rgba(10, 20, 15, 0.06);
+              "
+              :style="`background-image:url(${banner01})`"
+            >
+              <div
+                style="
+                  position: absolute;
+                  inset: -10%;
+                  background: radial-gradient(
+                    circle at 30% 30%,
+                    rgba(19, 236, 128, 0.12),
+                    rgba(90, 180, 220, 0.06)
+                  );
+                  filter: blur(56px);
+                "
+              />
+
+              <v-sheet
+                elevation="3"
+                rounded
+                class="d-flex align-center pa-3"
+                style="
+                  position: absolute;
+                  bottom: 18px;
+                  right: 18px;
+                  background: rgba(255, 255, 255, 0.92);
+                "
+              >
+                <v-icon size="16" color="#13ec80">mdi-leaf</v-icon>
+                <div class="ml-2">
+                  <div class="text-caption font-weight-bold">Kurti</div>
+                  <div class="text-caption">Saved 1kg CO₂</div>
+                </div>
+              </v-sheet>
+            </div>
+          </v-col>
+        </v-row>
       </v-col>
     </v-row>
 
-    <v-row class="mt-6">
-      <v-col cols="12" md="10">
-        <div class="d-flex align-center justify-space-between mb-2">
-          <h3 class="ma-0">Shop by brands</h3>
-          <v-btn text small @click="viewAllBrands">View all</v-btn>
+    <!-- AUDIENCE -->
+    <v-row justify="center">
+      <v-col cols="12" md="10" class="px-4">
+        <h3 class="font-weight-black mb-6">Who are you shopping for?</h3>
+
+        <v-row>
+          <v-col
+            v-for="a in audiences"
+            :key="a.key"
+            cols="12"
+            sm="6"
+            md="3"
+            class="d-flex justify-center"
+          >
+            <v-sheet
+              elevation="0"
+              rounded="lg"
+              class="d-flex flex-column align-center pa-4 transition-fast-in-fast-out"
+              :class="{ 'elevation-6': selectedAudience === a.key }"
+              :style="
+                selectedAudience === a.key ? 'transform:translateY(-6px)' : ''
+              "
+              @click="onAudience(a.key)"
+              style="cursor: pointer"
+            >
+              <v-avatar size="160" elevation="3" class="mb-3">
+                <v-img :src="a.img" height="100%" width="100%" cover />
+              </v-avatar>
+
+              <div class="font-weight-bold">
+                {{ a.label }}
+              </div>
+            </v-sheet>
+          </v-col>
+        </v-row>
+      </v-col>
+    </v-row>
+
+    <!-- BRANDS -->
+    <v-row justify="center">
+      <v-col cols="12" md="10" class="px-4">
+        <div class="d-flex justify-space-between align-center mb-3">
+          <h3 class="font-weight-black">Trending Brands</h3>
+          <v-btn text size="small" color="#13ec80" @click="viewAllBrands">
+            View all
+          </v-btn>
         </div>
-        <div class="d-flex flex-row flex-wrap py-2">
+
+        <div class="d-flex flex-wrap" style="gap: 12px">
           <v-chip
             v-for="b in brands"
-            :key="b.brand_id || b.brand_uuid || b.id"
-            class="ma-1"
+            :key="b.id"
+            outlined
+            class="rounded-pill font-weight-bold"
             @click="onBrand(b)"
-            role="button"
           >
             {{ b.name || b.brand_name }}
           </v-chip>
-          <v-chip class="ma-1" outlined @click="viewAllBrands">
-            All brands
-          </v-chip>
         </div>
       </v-col>
     </v-row>
 
-    <v-row class="mt-6">
-      <v-col cols="12" md="10">
-        <div class="d-flex align-center justify-space-between mb-2">
-          <h3 class="ma-0">Shop by categories</h3>
-          <v-btn text small @click="viewAllCategories">View all</v-btn>
+    <!-- CATEGORIES -->
+    <v-row justify="center" class="pb-12">
+      <v-col cols="12" md="10" class="px-4">
+        <div class="d-flex justify-space-between align-center mb-3">
+          <h3 class="font-weight-black">Browse by Category</h3>
+          <v-btn text size="small" color="#13ec80" @click="viewAllCategories">
+            View all
+          </v-btn>
         </div>
-        <div class="d-flex flex-row flex-wrap py-2">
-          <v-chip
+
+        <div class="d-flex flex-wrap" style="gap: 12px">
+          <v-btn
             v-for="c in categories"
-            :key="c.category_id || c.category_uuid || c.id"
-            class="ma-1"
+            :key="c.id"
+            size="small"
+            rounded
+            style="background: rgba(19, 236, 128, 0.08)"
             @click="onCategory(c)"
-            role="button"
           >
             {{ c.name }}
-          </v-chip>
+          </v-btn>
         </div>
       </v-col>
     </v-row>
@@ -97,8 +240,8 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import api from "@/plugins/axios.js";
 import { useRouter } from "vue-router";
+import api from "@/plugins/axios.js";
 import banner01 from "../../../assets/images/banner01.png";
 import men from "../../../assets/images/men.webp";
 import women from "../../../assets/images/women.webp";
@@ -109,6 +252,7 @@ const router = useRouter();
 const selectedAudience = ref(null);
 const brands = ref([]);
 const categories = ref([]);
+
 const audiences = [
   { key: "male", label: "Men", img: men },
   { key: "female", label: "Women", img: women },
@@ -116,45 +260,39 @@ const audiences = [
   { key: "unisex", label: "Unisex", img: unisex },
 ];
 
-async function loadLists() {
-  try {
-    const [bRes, cRes] = await Promise.all([
-      api
-        .get("/brands")
-        .then((r) => r.data)
-        .catch(() => ({ rows: [], data: [] })),
-      api
-        .get("/category")
-        .then((r) => r.data)
-        .catch(() => ({ rows: [], data: [] })),
-    ]);
-    brands.value = Array.isArray(bRes) ? bRes : bRes.rows || bRes.data || [];
-    categories.value = Array.isArray(cRes)
-      ? cRes
-      : cRes.rows || cRes.data || [];
-  } catch (err) {
-    console.error("Failed to load brands/categories", err);
-  }
-}
+const sampleAvatars = [
+  "https://i.pravatar.cc/100?img=1",
+  "https://i.pravatar.cc/100?img=10",
+  "https://i.pravatar.cc/100?img=5",
+];
 
-onMounted(loadLists);
+onMounted(async () => {
+  const [b, c] = await Promise.all([
+    api
+      .get("/brands")
+      .then((r) => r.data)
+      .catch(() => []),
+    api
+      .get("/category")
+      .then((r) => r.data)
+      .catch(() => []),
+  ]);
+  brands.value = b;
+  categories.value = c;
+});
 
 function onAudience(key) {
   selectedAudience.value = selectedAudience.value === key ? null : key;
-  const q = selectedAudience.value
-    ? { target_audience: selectedAudience.value }
-    : {};
-  router.push({ name: "product-list", query: q });
+  router.push({
+    name: "product-list",
+    query: selectedAudience.value ? { target_audience: key } : {},
+  });
 }
 function onBrand(b) {
-  const id = b.brand_id ?? b.brand_id ?? b.brand_id ?? b.id;
-  if (!id) return;
-  router.push({ name: "product-list", query: { brand_id: id } });
+  router.push({ name: "product-list", query: { brand_id: b.id } });
 }
 function onCategory(c) {
-  const id = c.category_id ?? c.category_id ?? c.id;
-  if (!id) return;
-  router.push({ name: "product-list", query: { category_id: id } });
+  router.push({ name: "product-list", query: { category_id: c.id } });
 }
 function viewAllBrands() {
   router.push({ name: "product-list" });

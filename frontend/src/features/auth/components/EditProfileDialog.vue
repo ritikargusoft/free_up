@@ -1,94 +1,107 @@
 <template>
-  <v-dialog v-model="model" max-width="600px">
-    <v-card>
-      <v-card-title>Edit Profile</v-card-title>
-      <v-card-text>
-        <v-form ref="formRef" v-model="valid" lazy-validation>
-          <v-text-field
-            v-model="form.name"
-            label="Name"
-            :rules="[(v) => !!v || 'Name required']"
-            required
-          />
-          <v-text-field v-model="form.phone" label="Phone" />
-          <v-textarea v-model="form.address" label="Address" rows="3" />
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn text @click="close">Cancel</v-btn>
-        <v-btn class="bg-primary text-white" :loading="loading" @click="save"
-          >Save</v-btn
-        >
-      </v-card-actions>
-    </v-card>
+  <v-dialog v-model="model" max-width="480">
+    <v-sheet rounded="xl" class="pa-6">
+      <div class="d-flex justify-space-between align-center mb-4">
+        <h3 class="font-weight-bold">Edit Profile</h3>
+        <v-btn icon variant="text" @click="close">
+          <v-icon>mdi-close</v-icon>
+        </v-btn>
+      </div>
+
+      <div class="d-flex flex-column align-center mb-6">
+        <v-avatar size="88" elevation="2">
+          <v-img :src="avatarUrl" />
+        </v-avatar>
+        <v-btn variant="text" size="small" class="mt-2"> Change Photo </v-btn>
+      </div>
+
+      <v-form @submit.prevent="save">
+        <v-text-field
+          v-model="form.name"
+          label="Full Name"
+          variant="solo"
+          class="mb-4"
+        />
+
+        <v-text-field
+          v-model="form.phone"
+          label="Phone Number"
+          variant="solo"
+          class="mb-4"
+        />
+
+        <v-textarea
+          v-model="form.address"
+          label="Shipping Address"
+          variant="solo"
+          rows="3"
+          class="mb-6"
+        />
+
+        <div class="d-flex justify-end" style="gap: 12px">
+          <v-btn variant="outlined" @click="close">Cancel</v-btn>
+          <v-btn
+            class="rounded-pill"
+            style="background: #13ec80; color: #062016"
+            type="submit"
+            :loading="loading"
+          >
+            Save Changes
+          </v-btn>
+        </div>
+      </v-form>
+    </v-sheet>
   </v-dialog>
 </template>
+
 <script setup>
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { useStore } from "vuex";
-import { toast } from "vue3-toastify";
 
-const props = defineProps({
-  modelValue: { type: Boolean, default: false },
-});
-const emit = defineEmits(["update:modelValue", "updated"]);
+const props = defineProps({ modelValue: Boolean });
+const emit = defineEmits(["update:modelValue"]);
 
+const store = useStore();
 const model = ref(props.modelValue);
 const loading = ref(false);
-const valid = ref(true);
-const formRef = ref(null);
-const store = useStore();
-const userFromStore = store.getters["auth/user"] || {};
-const form = ref({
-  name: userFromStore.name || "",
-  phone: userFromStore.phone || "",
-  address: userFromStore.address || "",
-});
+
+const user = computed(() => store.getters["auth/user"] || {});
+const avatarUrl = computed(
+  () =>
+    `https://ui-avatars.com/api/?name=${encodeURIComponent(
+      user.value.name || "U"
+    )}`
+);
+
+const form = ref({ name: "", phone: "", address: "" });
 
 watch(
   () => props.modelValue,
-  (value) => {
-    model.value = value;
-    if (value) {
-
-      const u = store.getters["auth/user"] || {};
-      form.value.name = u.name || "";
-      form.value.phone = u.phone || "";
-      form.value.address = u.address || "";
+  (v) => {
+    model.value = v;
+    if (v) {
+      form.value = {
+        name: user.value.name || "",
+        phone: user.value.phone || "",
+        address: user.value.address || "",
+      };
     }
   }
 );
 
-watch(model, (v) => {
-  emit("update:modelValue", v);
-});
+watch(model, (v) => emit("update:modelValue", v));
+
 function close() {
   model.value = false;
-  emit("update:modelValue", false);
 }
+
 async function save() {
-
-
   loading.value = true;
   try {
-    const payload = {
-      name: form.value.name,
-      phone: form.value.phone,
-      address: form.value.address,
-    };
-    const updated = await store.dispatch("auth/updateProfile", payload);
-   
+    await store.dispatch("auth/updateProfile", form.value);
     close();
-  } catch (err) {
-    console.error("Update profile failed", err);
-    toast.error(
-      err.response?.data?.message || err.message || "Failed to update profile"
-    );
   } finally {
     loading.value = false;
   }
 }
 </script>
-<style scoped>
-</style>

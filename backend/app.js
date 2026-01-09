@@ -9,7 +9,10 @@ import { initCloudinary } from "./utils/cloudinaryConfig.js";
 
 const app = express();
 
-const FRONTEND_ORIGIN = process.env.FRONTEND_ORIGIN || "http://localhost:5173";
+const FRONTEND_ORIGIN =
+  process.env.FRONTEND_ORIGIN ||
+  "http://localhost:5173" ||
+  "http://localhost:5174";
 
 app.use(
   cors({

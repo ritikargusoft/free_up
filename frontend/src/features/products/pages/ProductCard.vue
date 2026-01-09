@@ -1,26 +1,57 @@
 <template>
-  <v-card elevation="2">
-    <v-img :src="thumb" height="200" cover />
-    <v-card-title>{{ product.product_name }}</v-card-title>
-    <v-card-subtitle>Brand: {{ product.brand_name || "—" }}</v-card-subtitle>
-    <v-card-text>
-      <div class="mb-2">{{ product.description }}</div>
-      <div class="d-flex justify-space-between">
-        <div>Price: {{ product?.price ?? "—" }}</div>
+  <v-card rounded="xl" elevation="1" class="pa-2 product-card">
+    <!-- Image -->
+    <v-img :src="thumb" height="180" cover class="rounded-lg">
+      <!-- View button overlay -->
+      <div class="image-overlay d-flex align-end justify-end pa-2">
+        <v-btn
+          size="small"
+          variant="flat"
+          color="white"
+          class="text-black"
+          @click="goToProduct"
+        >
+          View
+        </v-btn>
+      </div>
+    </v-img>
 
-        <div>Qty: {{ product.available_quantity }}</div>
-        <div>{{ product.target_audience }}</div>
+    <!-- Content -->
+    <v-card-text>
+      <v-chip size="x-small" class="mb-2">
+        {{ product.target_audience || "Unisex" }}
+      </v-chip>
+
+      <div class="font-weight-bold mb-1 text-truncate">
+        {{ product.product_name }}
+      </div>
+
+      <div class="d-flex justify-space-between align-center">
+        <span class="font-weight-bold price">
+          ₹{{ product.price ?? "—" }}
+        </span>
+
+        <v-chip
+          size="x-small"
+          color="green"
+          v-if="product.available_quantity > 0"
+        >
+          ACTIVE
+        </v-chip>
+        <v-chip size="x-small" color="red" v-else> OUT </v-chip>
+      </div>
+
+      <div class="text-caption mt-1">
+        {{ product.available_quantity }} in stock
       </div>
     </v-card-text>
-    <v-card-actions>
-      <v-btn text @click="goToProduct">View</v-btn>
-    </v-card-actions>
   </v-card>
 </template>
 
 <script setup>
 import { computed } from "vue";
 import { useRouter } from "vue-router";
+
 const props = defineProps({ product: Object });
 const router = useRouter();
 
@@ -49,3 +80,23 @@ function goToProduct() {
   }
 }
 </script>
+
+<style scoped>
+.product-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.product-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.08);
+}
+
+.image-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.35), transparent);
+}
+
+.price {
+  color: #13ec80;
+}
+</style>

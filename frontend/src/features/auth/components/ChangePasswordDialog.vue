@@ -1,121 +1,103 @@
-
 <template>
-  <v-dialog v-model="model" max-width="520px">
-    <v-card>
-      <v-card-title>Change Password</v-card-title>
-      <v-card-text>
-        <v-form ref="formRef" v-model="valid" lazy-validation>
-          <v-text-field
-            v-model="form.oldPassword"
-            label="Current password"
-            type="password"
-            :rules="[v => !!v || 'Current password is required']"
-            autocomplete="current-password"
-            required
-          />
-          <v-text-field
-            v-model="form.newPassword"
-            label="New password"
-            type="password"
-            :rules="newPasswordRules"
-            autocomplete="new-password"
-            required
-          />
-          <v-text-field
-            v-model="form.confirmPassword"
-            label="Confirm new password"
-            type="password"
-            :rules="[v => v === form.newPassword || 'Passwords do not match']"
-            autocomplete="new-password"
-            required
-          />
-        </v-form>
-      </v-card-text>
-      <v-card-actions>
-        <v-spacer />
-        <v-btn text @click="close">Cancel</v-btn>
-        <v-btn
-          class="bg-primary text-white"
-          :loading="loading"
-          @click="submit"
-          :disabled="loading"
-        >
-          Save
+  <v-dialog v-model="model" max-width="480">
+    <v-sheet rounded="xl" class="pa-6">
+      <div class="d-flex justify-space-between align-center mb-2">
+        <h3 class="font-weight-bold">Change Password</h3>
+        <v-btn icon variant="text" @click="close">
+          <v-icon>mdi-close</v-icon>
         </v-btn>
-      </v-card-actions>
-    </v-card>
+      </div>
+
+      <p class="text-caption mb-6">
+        To secure your account, enter your current password and create a new
+        one.
+      </p>
+
+      <v-form @submit.prevent="submit">
+        <v-text-field
+          v-model="form.oldPassword"
+          label="Current Password"
+          type="password"
+          variant="solo"
+          class="mb-4"
+        />
+
+        <v-text-field
+          v-model="form.newPassword"
+          label="New Password"
+          type="password"
+          variant="solo"
+          class="mb-2"
+        />
+
+        <v-text-field
+          v-model="form.confirmPassword"
+          label="Confirm New Password"
+          type="password"
+          variant="solo"
+          class="mb-6"
+        />
+
+        <div class="d-flex justify-end" style="gap: 12px">
+          <v-btn variant="outlined" @click="close">Cancel</v-btn>
+          <v-btn
+            class="rounded-pill"
+            style="background: #13ec80; color: #062016"
+            type="submit"
+            :loading="loading"
+          >
+            Update Password
+          </v-btn>
+        </div>
+      </v-form>
+    </v-sheet>
   </v-dialog>
 </template>
+
 <script setup>
-import { ref, watch, computed } from "vue";
+import { ref, watch } from "vue";
 import { useStore } from "vuex";
-import { toast } from "vue3-toastify";
-const props = defineProps({
-  modelValue: { type: Boolean, default: false },
-});
-const emit = defineEmits(["update:modelValue", "changed"]); 
+
+const props = defineProps({ modelValue: Boolean });
+const emit = defineEmits(["update:modelValue"]);
+
 const store = useStore();
 const model = ref(props.modelValue);
 const loading = ref(false);
-const valid = ref(true);
-const formRef = ref(null);
+
 const form = ref({
   oldPassword: "",
   newPassword: "",
   confirmPassword: "",
 });
 
-const newPasswordRules = [
-  v => !!v || "New password is required",
-  v => (v && v.length >= 6) || "Password must be at least 6 characters",
-];
-watch(() => props.modelValue, (v) => {
-  model.value = v;
-  if (v) {
-
-    form.value.oldPassword = "";
-    form.value.newPassword = "";
-    form.value.confirmPassword = "";
+watch(
+  () => props.modelValue,
+  (v) => {
+    model.value = v;
+    if (v) {
+      form.value = { oldPassword: "", newPassword: "", confirmPassword: "" };
+    }
   }
-});
+);
+
 watch(model, (v) => emit("update:modelValue", v));
+
 function close() {
   model.value = false;
-  emit("update:modelValue", false);
 }
-async function submit() {
 
-  if (form.value.newPassword !== form.value.confirmPassword) {
-    toast.error("New passwords do not match");
-    return;
-  }
-  if (!form.value.oldPassword || !form.value.newPassword) {
-    toast.error("Please fill all password fields");
-    return;
-  }
+async function submit() {
+  if (form.value.newPassword !== form.value.confirmPassword) return;
   loading.value = true;
   try {
     await store.dispatch("auth/changePassword", {
       oldPassword: form.value.oldPassword,
       newPassword: form.value.newPassword,
     });
-
-    emit("changed");
-    
     close();
-  } catch (err) {
-
-    const msg = err.response?.data?.message || err.message || "Failed to change password";
-    toast.error(msg);
   } finally {
     loading.value = false;
   }
 }
 </script>
-<style scoped>
-</style>
-
-
-
-
-
